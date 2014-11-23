@@ -32,6 +32,7 @@ Release/*
 .settings/*
 .cproject
 .project
+.DS_Store
 
 # Raisonance RIDE Project
 RIDE/*
@@ -45,4 +46,6 @@ libraries/Arduino/
 # TropicSSL libraries
 libraries/Tropicssl/
 ci/test-reports/
-unit/obj/
+nbproject/
+build/target/
+build/cores/

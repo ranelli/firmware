@@ -17,15 +17,20 @@ ci_dir=$(dirname $0)
 
 export core_name=${name[$platform]}
 
+if [ -z "$core_name" ]; then
+  echo "No core defined for platform $platform. Skipping test $platform/$suite."
+  exit 0
+fi
+
 # make the firmware 
-echo Building test suite in "$1"
+echo Building test suite in "$testdir"
 $ci_dir/make_test.sh $platform $suite || die 
 
-# flash the firmware
-echo "OTA flashing firmware at $(date)"
-spark flash $core_name $target_file || die 
-# todo - verify test suite build time or fix spark-cli return codes
+sparkFlash 5 $core_name $target_file || { echo "Unable to OTA flash test suite"; die; }
 
+
+echo "Waiting for core to reboot"
+# todo - verify test suite build time or fix spark-cli return codes
 # give enough time for the core to go into OTA mode
 sleep 10 || die
 

@@ -34,10 +34,10 @@ Unit Tests
 The unit tests are also built and executed. These are found under
 
 ```
-   testes/unit/
+   tests/unit/
 ```
 
-These tests are comiled under regular gcc (not the ARM version) and executed on 
+These tests are compiled under regular gcc (not the ARM version) and executed on 
 the build server locally.
 
 Only one test runner is built since all tests can be compiled together.

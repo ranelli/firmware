@@ -8,14 +8,15 @@ export ci_dir=$(dirname $BASH_SOURCE)
 . $ci_dir/functions.sh
 
 export build=$ci_dir/../build
+export main=$ci_dir/../main
+export target_dir=$build/target
 export target=core-firmware.bin
 export events=$ci_dir/events.log
-export target=core-firmware
-export target_file=$build/$target.bin
-export testDir=$ci_dir/../tests
+export target_file=$target_dir/main/prod-0/tests/$platform/$suite/main.bin
+export testDir=$main/tests
 
 # directory for the test reports
-export log_dir=${ci_dir}/test-reports
+export log_dir=${target_dir}/test-reports
 mkdir -p ${log_dir}
 
 
@@ -101,12 +102,12 @@ function startTests() {
 # $1 the regex to include
 function includeTests() {
   echo "include tests matching $1"
-  [[ "$(sendCommand 'include=$1')"=="0" ]]
+  [[ $(sendCommand "include=$1")=="0" ]]
 }
 
 function excludeTests() {
   echo "exclude tests matching $1"
-  [[ "$(sendCommand 'exclude=$1')"=="0" ]]
+  [[ $(sendCommand "exclude=$1")=="0" ]]
 }
 
 # sends a command to the test harness
@@ -156,4 +157,18 @@ function echoVar {
 
 function readVar() {
   spark variable get $core_name $1 
+}
+
+function sparkFlash() {
+    # flash the firmware - attempt to do this up to $1 times
+    count=$1
+    for ((n=1; n<=count; n++))
+    do
+        echo "OTA flashing firmware at $(date) - attempt $n"
+        spark flash $2 $3 > otaflash
+        [[ $? -eq 0 ]] && grep -q -v ECONN otaflash && break
+    done
+    
+    [ $n -lt $count ]
+    return $?
 }
